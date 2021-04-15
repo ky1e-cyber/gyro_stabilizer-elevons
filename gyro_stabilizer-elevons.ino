@@ -11,17 +11,17 @@
 #define OUTPUT_ELEV_R 1
 #define OUTPUT_ELEV_L 2
 
-#define SIGNAL_X_RIGHT 57
-#define SIGNAL_X_ZERO 44
-#define SIGNAL_X_LEFT 32
+#define SIGNAL_X_RIGHT 60
+#define SIGNAL_X_ZERO 47
+#define SIGNAL_X_LEFT 34
 
-#define SIGNAL_Y_UP 56
-#define SIGNAL_Y_ZERO 44
+#define SIGNAL_Y_UP 58
+#define SIGNAL_Y_ZERO 46
 #define SIGNAL_Y_DOWN 32
 
-#define SIGNAL_Z_LEFT 31
-#define SIGNAL_Z_ZERO 44
-#define SIGNAL_Z_RIGHT 56
+#define SIGNAL_Z_LEFT 32
+#define SIGNAL_Z_ZERO 45
+#define SIGNAL_Z_RIGHT 58
 
 #define SPEED_X 9000
 #define SPEED_Y 4500
@@ -60,7 +60,9 @@ Multiservo elev_r;
 Multiservo elev_l;
 
 void readSignal() {
-  width_x, width_y, width_z = 0;
+  width_x = 0;
+  width_y = 0;
+  width_z = 0;
   while (digitalRead(INPUT_X) | digitalRead(INPUT_Y) | digitalRead(INPUT_Z)) {
     width_x += digitalRead(INPUT_X);
     width_y += digitalRead(INPUT_Y);
@@ -70,12 +72,12 @@ void readSignal() {
 }
 
 void servoLoop(int32_t speed_x, int32_t speed_y, int32_t speed_z) {
-  int16_t angle_elev_r = map(speed_x, -SPEED_X, SPEED_X, -ELEV_ANGLE, ELEV_ANGLE);;
-  int16_t angle_elev_l = angle_elev_r * -1;
+  int16_t angle_elev_r = map(speed_x, -SPEED_X, SPEED_X, -ELEV_ANGLE, ELEV_ANGLE) * -1;
+  int16_t angle_elev_l = angle_elev_r;
   int16_t delta_angle = map(speed_y, -SPEED_Y, SPEED_Y, -ELEV_ANGLE, ELEV_ANGLE) * -1;
   int16_t angle_vstab = map(speed_z, -SPEED_Z, SPEED_Z, -VSTAB_ANGLE, VSTAB_ANGLE);
   angle_elev_r = constrain(angle_elev_r + delta_angle, -ELEV_ANGLE_MAX, ELEV_ANGLE_MAX);
-  angle_elev_l = constrain(angle_elev_l + delta_angle, -ELEV_ANGLE_MAX, ELEV_ANGLE_MAX);
+  angle_elev_l = constrain(angle_elev_l + delta_angle * -1, -ELEV_ANGLE_MAX, ELEV_ANGLE_MAX);
   elev_r.write(90 + angle_elev_r);
   elev_l.write(90 + angle_elev_l);
   vstab.write(90 + angle_vstab);
